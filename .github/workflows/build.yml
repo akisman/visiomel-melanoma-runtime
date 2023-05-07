@@ -40,22 +40,3 @@ jobs:
         run: |
           docker run --entrypoint /bin/bash $LOGIN_SERVER/$IMAGE:$SHA_TAG \
             -c "conda run --no-capture-output -n condaenv python -m pytest tests"
-
-      - name: Log into Azure
-        if: ${{ github.ref == 'refs/heads/main' && env.PUBLISH_IMAGE == 'PUBLISH_IMAGE' }}
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Log into ACR with Docker
-        if: ${{ github.ref == 'refs/heads/main' && env.PUBLISH_IMAGE == 'PUBLISH_IMAGE' }}
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ env.LOGIN_SERVER }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
-      - name: Push image to ACR
-        if: ${{ github.ref == 'refs/heads/main' && env.PUBLISH_IMAGE == 'PUBLISH_IMAGE' }}
-        run: |
-          docker push $LOGIN_SERVER/$IMAGE --all-tags
